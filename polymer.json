@@ -2,6 +2,7 @@
   "entrypoint": "index.html",
   "shell": "src/matrimonyplace-app.html",
   "fragments": [
+    "src/matrimonyplace-home.html",
     "src/matrimonyplace-view1.html",
     "src/matrimonyplace-view2.html",
     "src/matrimonyplace-view3.html",

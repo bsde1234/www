@@ -18,11 +18,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/app-localize-behavior/app-localize-behavior.html">
 <link rel="import" href="../bower_components/app-route/app-location.html">
 <link rel="import" href="../bower_components/app-route/app-route.html">
+<link rel="import" href="../bower_components/iron-media-query/iron-media-query.html">
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../bower_components/paper-toggle-button/paper-toggle-button.html">
-<link rel="import" href="../bower_components/platinum-sw/platinum-sw-elements.html">
-<link rel="import" href="../bower_components/polymerfire/polymerfire.html">
+<!-- <link rel="import" href="../bower_components/platinum-sw/platinum-sw-elements.html"> -->
+<link rel="import" href="../bower_components/polymerfire/firebase-app.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
+
+<link rel="import" href="matrimonyplace-home.html">
+<link rel="import" href="matrimonyplace-view1.html">
+<link rel="import" href="matrimonyplace-view2.html">
+<link rel="import" href="matrimonyplace-view3.html">
+<link rel="import" href="matrimonyplace-view404.html">
+
+<!-- Intl polyfill -->
+<script src="../bower_components/intl/dist/Intl.min.js"></script>
 
 <link rel="import" href="matrimonyplace-icons.html">
 
@@ -30,18 +42,31 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <template>
     <style>
       :host {
-        --app-primary-color: #4285f4;
+        --app-primary-color: rgba(255, 255, 255, 0.95);
         --app-secondary-color: black;
 
         display: block;
       }
 
       app-header {
-        color: #fff;
+        /*@apply(--layout-fixed-top);*/
+        color: var(--app-secondary-color);
         background-color: var(--app-primary-color);
+        --app-header-shadow: {
+          box-shadow: inset 0px 5px 6px -3px rgba(0, 0, 0, 0.2);
+          height: 10px;
+          bottom: -10px;
+        };
+        /*z-index: 1;*/
       }
+
       app-header paper-icon-button {
-        --paper-icon-button-ink-color: white;
+        --paper-icon-button-ink-color: white
+        color: var(--app-primary-color);
+      }
+
+      .logo {
+        text-align: center;
       }
 
       .drawer-list {
@@ -72,7 +97,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         route="{{route}}"
         pattern="/:page"
         data="{{routeData}}"
-        tail="{{subroute}}"></app-route>
+        tail="{{subroute}}"
+        query-params="{{queryParams}}"></app-route>
+
+    <iron-media-query query="max-width: 767px" query-matches="{{width1}}"></iron-media-query>
+    <iron-media-query query="(min-width: 768px) and (max-width: 1023px)" query-matches="{{width2}}"></iron-media-query>
+    <iron-media-query query="(min-width: 1024px) and (max-width: 1439px)" query-matches="{{width3}}"></iron-media-query>
+    <iron-media-query query="(min-width: 1440px) and (max-width: 1919px)" query-matches="{{width4}}"></iron-media-query>
+    <iron-media-query query="(min-width: 1920px) and (max-width: 2047px)" query-matches="{{width5}}"></iron-media-query>
+    <iron-media-query query="(min-width: 2048px) and (max-width: 3839px)" query-matches="{{width6}}"></iron-media-query>
+    <iron-media-query query="min-width: 3840px" query-matches="{{width7}}"></iron-media-query>
+
+    <iron-media-query query="orientation: landscape" query-matches="{{orientationLandscape}}"></iron-media-query>
+    <iron-media-query query="orientation: portrait" query-matches="{{orientationPortrait}}"></iron-media-query>
 
     <app-drawer-layout fullbleed>
       <!-- Drawer content -->
@@ -92,12 +129,31 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <app-toolbar>
             <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
             <div main-title>Matrimony Place</div>
-            <div class="lang">
+            <!-- <div class="lang">
               <span title="english">🇬🇧 EN</span>
               <paper-toggle-button on-change="_toggle" id="switch"></paper-toggle-button>
               <span title="french">FR 🇫🇷</span>
-            </div>
-            <div>{{localize('greeting')}}</div>
+            </div> -->
+            <select id="selectLanguage" value="{{queryParams.lang}}" on-change="_selectLanguageChanged">
+              <option value="al">🇦🇱</option>
+              <option value="en">🇬🇧</option>
+              <option value="es">🇪🇸</option>
+              <option value="fr">🇫🇷</option>
+              <option value="it">🇮🇹</option>
+              <option value="jp">🇯🇵</option>
+              <option value="ro">🇷🇴</option>
+              <option value="zh">🇨🇳</option>
+              <option value="tw">🇹🇼</option>
+              <option value="ua">🇺🇦</option>
+              <option value="br">🇧🇷</option>
+              <option value="de">🇩🇪</option>
+              <option value="sv">🇸🇪</option>
+              <option value="fi">🇫🇮</option>
+              <option value="mk">🇲🇰</option>
+              <option value="sw">🇹🇿</option>
+              <option value="he">🇮🇱</option>
+            </select>
+            <!-- <div>{{localize('greeting')}}</div> -->
           </app-toolbar>
         </app-header>
 
@@ -106,20 +162,54 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             attr-for-selected="name"
             fallback-selection="view404"
             role="main">
-          <matrimonyplace-view1 name="view1"></matrimonyplace-view1>
-          <matrimonyplace-view2 name="view2"></matrimonyplace-view2>
-          <matrimonyplace-view3 name="view3"></matrimonyplace-view3>
-          <matrimonyplace-view404 name="view404"></matrimonyplace-view404>
+          <matrimonyplace-home name="home" language="[[language]]" offline="[[offline]]"></matrimonyplace-home>
+          <matrimonyplace-view1 name="view1" language="[[language]]" offline="[[offline]]"></matrimonyplace-view1>
+          <matrimonyplace-view2 name="view2" language="[[language]]" offline="[[offline]]"></matrimonyplace-view2>
+          <matrimonyplace-view3 name="view3" language="[[language]]" offline="[[offline]]"></matrimonyplace-view3>
+          <matrimonyplace-view404 name="view404" language="[[language]]" offline="[[offline]]"></matrimonyplace-view404>
         </iron-pages>
+
+        <firebase-app
+          name="matrimony-place"
+          api-key="AIzaSyBrVbRJprjIfe6XzyE8zdZovT4OxzzRFRA"
+          auth-domain="matrimony-place.firebaseapp.com"
+          database-url="https://matrimony-place.firebaseio.com/"
+          storage-bucket="matrimony-place.appspot.com">
+        </firebase-app>
+
+        <firebase-auth id="googleAuth" user="{{user}}" provider="google"></firebase-auth>
+
+        <firebase-query
+          path="/posts"
+          data="{{_liveDataNews}}"
+          log>
+        </firebase-query>
+
+        <app-indexeddb-mirror
+          key="/posts"
+          data="{{_liveDataNews}}"
+          persisted-data="{{newsPosts}}">
+        </app-indexeddb-mirror>
+
+        <template is="dom-repeat" items="{{newsPosts}}" as="post">
+          <h2>[[post.title]]</h2>
+        </template>
       </app-header-layout>
     </app-drawer-layout>
 
-    <firebase-app
-        name="matrimonyplace"
-        api-key="AIzaSyBrVbRJprjIfe6XzyE8zdZovT4OxzzRFRA"
-        auth-domain="matrimony-place.firebaseapp.com"
-        database-url="https://matrimony-place.firebaseio.com">
-    </firebase-app>
+    <div class="signin-view" id="signin" hidden>
+      <div class="header">
+        <div class="giant">👋🆒🐱</div>
+        <p>{{localize('splash-one')}}<br>{{localize('splash-two')}}</p>
+        <br>
+        <button on-tap="login" raised hidden$="[[offline]]">{{localize('sign-in')}}</button>
+        <div hidden$="[[!offline]]" class="offline">{{localize('splash-offline')}}</div>
+      </div>
+
+      <p class="footer" inner-h-t-m-l="{{localize('splash-footer')}}"></p>
+    </div>
+
+    <!-- <moji-feed id="feed" offline="[[offline]]" language="[[language]]"></moji-feed> -->
   </template>
 
   <script>
@@ -135,6 +225,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           type: String,
           value: 'en'
         },
+        offline: {
+          type: Boolean,
+          value: false
+        },
         page: {
           type: String,
           reflectToAttribute: true,
@@ -142,22 +236,74 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }
       },
 
-      attached: function() {
-        this.loadResources(this.resolveUrl('locales.json'));
-      },
-
       observers: [
         '_routePageChanged(routeData.page)'
       ],
 
-      _routePageChanged: function(page) {
-        this.page = page || 'view1';
+      attached: function() {
+        this.loadResources(this.resolveUrl('locales.json'));
+      },
+
+      ready: function() {
+        this.offline = navigator.onLine === false;
+
+        window.addEventListener('online', function() {
+          this.offline = false;
+        }.bind(this));
+
+        window.addEventListener('offline', function() {
+          this.offline = true;
+        }.bind(this));
+
+        this.addEventListener('language-changed', function(event) {
+          this.language = event.detail.value;
+        }.bind(this));
+
+        // this.$.googleAuth.auth.onAuthStateChanged(function(user) {
+        //   if (!!user) {
+        //     this.importHref(this.resolveUrl('moji-feed.html'), function() {
+        //       this.$.feed.user = user;
+        //       this.$.signin.hidden = true;
+        //       this.$.feed.hidden = false;
+        //       // We went from hidden to visible, so app-layout needs to recompute its size.
+        //       this.$.feed.resizeHeader();
+        //     });
+        //   } else {
+        //     this.$.signin.hidden = false;
+        //     this.$.feed.hidden = true;
+        //   }
+        // }.bind(this));
+      },
+
+      login: function() {
+        this.$.googleAuth.signInWithPopup();
       },
 
       _pageChanged: function(page) {
         // Load page import on demand. Show 404 page if fails
         var resolvedPageUrl = this.resolveUrl('matrimonyplace-' + page + '.html');
         this.importHref(resolvedPageUrl, null, this._showPage404, true);
+      },
+
+      _routePageChanged: function(page) {
+        this.page = page || 'home';
+      },
+
+      _selectLanguageChanged: function(event) {
+        this.set('queryParams.lang', event.target.value);
+        this.fire('language-changed', {value: event.target.value});
+        switch (event.target.value) {
+          case "he":
+          case "ar":
+          case "ff":
+          case "fa":
+          case "yi":
+          case "ur":
+            document.body.style.setProperty("direction", "rtl");
+            break;
+          default:
+            document.body.style.setProperty("direction","ltr");
+        }
       },
 
       _showPage404: function() {
