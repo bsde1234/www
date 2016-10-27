@@ -1,26 +1,6 @@
-# Polymer App Toolbox - Starter Kit
+# Matrimony Place Website
 
-[![Build Status](https://travis-ci.org/PolymerElements/matrimonyplace.svg?branch=master)](https://travis-ci.org/PolymerElements/matrimonyplace)
-
-This template is a starting point for building apps using a drawer-based
-layout. The layout is provided by `app-layout` elements.
-
-This template, along with the `polymer-cli` toolchain, also demonstrates use
-of the "PRPL pattern" This pattern allows fast first delivery and interaction with
-the content at the initial route requested by the user, along with fast subsequent
-navigation by pre-caching the remaining components required by the app and
-progressively loading them on-demand as the user navigates through the app.
-
-The PRPL pattern, in a nutshell:
-
-* **Push** components required for the initial route
-* **Render** initial route ASAP
-* **Pre-cache** components for remaining routes
-* **Lazy-load** and progressively upgrade next routes on-demand
-
-### Migrating from Polymer Starter Kit v1?
-
-[Check out our blog post that covers what's changed in PSK2 and how to migrate!](https://www.polymer-project.org/1.0/blog/2016-08-18-matrimonyplace-or-polymer-cli.html)
+[![Build Status](https://travis-ci.org/matrimonyplace/www.svg?branch=master)](https://travis-ci.org/matrimonyplace/www)
 
 ### Setup
 
